@@ -1,0 +1,28 @@
+We don't want this to be a complicated, full featured web app
+- So no database to store shit, we'll just use CSVs
+
+Therefore, we will use flask since we don't need Django's ORM or database model
+
+Process for Choosing an Interview:
+* Interviewee applies through greenhouse
+* They put in their availability in time blocks
+* Check to see if greenhouse has an API
+* Check to see if google calendar has an API
+* Just make an application that allows you to put in a time block, and show a list of people who are available at that time
+    * Based on their skill set from a spreadsheet of skills, filter who’s available who can ask frontend or backend questions
+    * Also list how many times that person has been scheduled already in that week? [Stretch goal]
+
+App Requirements:
+- Allows user to choose a day and a time block (required)
+- Displays who is available at that time
+- Optional filters
+    - Filtering by who can do certain backend or frontend questions
+    - Filtering by who is on already that week (maybe only show if you have under 3 interviews that week)
+        - Idk how to distinguish these from other things on calendar, maybe search for "Interview" or ask gia what naming scheme is
+
+
+
+
+App Design:
+- Main page
+    - This will include the
