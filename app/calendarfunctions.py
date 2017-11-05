@@ -17,14 +17,15 @@ except ImportError:
     flags = None
 
 # If modifying these scopes, delete your previously saved credentials
-# at ~/.credentials/calendar-python-quickstart.json
+# at ~/.hubscheduler-credentials/app-oauth-credentials.json
 SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'HubScheduler Google Calendar API Python'
 
 
 def get_credentials():
-    """Gets valid user credentials from storage.
+    """
+    Gets valid user credentials from storage.
 
     If nothing has been stored, or if the stored credentials are invalid,
     the OAuth2 flow is completed to obtain the new credentials.
@@ -36,7 +37,7 @@ def get_credentials():
     credential_dir = os.path.join(home_dir, '.hubscheduler-credentials')
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
-    credential_path = os.path.join(credential_dir, 'hubscheduler-oauth-credentials.json')
+    credential_path = os.path.join(credential_dir, 'app-oauth-credentials.json')
 
     store = Storage(credential_path)
     credentials = store.get()
@@ -50,8 +51,30 @@ def get_credentials():
         print('Storing credentials to ' + credential_path)
     return credentials
 
+
+def create_service():
+    """
+    Creates a Google Calendar API service object
+    """
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('calendar', 'v3', http=http)
+    return service
+
+
+def get_calendar_id_list(service):
+    """
+    Get list of all HubSpot employee calendars IDs currently added to user's calendar.
+    Limited to fetching 250 as paging is not utilized here.
+    """
+    print('Getting list of calendars...')
+    listResult = service.calendarList().list(showHidden=True, maxResults=250).execute().get('items', [])
+    return [ cal["id"] for cal in listResult if "@hubspot.com" in cal["id"] ]
+
+
 def get_events():
-    """Shows basic usage of the Google Calendar API.
+    """
+    Shows basic usage of the Google Calendar API.
 
     Creates a Google Calendar API service object and outputs a list of the next
     10 events on the user's calendar.
@@ -74,3 +97,23 @@ def get_events():
     #     print(start, event['summary'])
 
     return events
+
+
+def get_free_calendars(time_block_begin, time_block_end):
+    service = create_service();
+
+    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+
+    calendars = get_calendar_id_list(service)
+    calendars = [{"id": id} for id in calendars]
+
+    request_body = {
+        "timeMin": time_block_begin.isoformat(),
+        "timeMax": time_block_end.isoformat(),
+        "timeZone": 'US/Eastern',
+        "items": calendars
+    }
+
+    eventsResult = service.freebusy().query(body=request_body).execute()
+    cal_dict = eventsResult[u'calendars']
+    return cal_dict

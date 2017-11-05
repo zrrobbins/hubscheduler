@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HubScheduler</title>
+</head>
+<body>
+    {% if events %}
+    <h1>Here are your next 10 events, {{ user }}:</h1>
+    <div class="events-holder">
+        {% for event in events %}
+        <div class="event">
+            <p>Start: {{ event[0] }}</p>
+            <p>Event: {{ event[1] }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <h1>Couldn't retrieve any events for {{ user }}.</h1>
+    {% endif %}
+</body>
+</html>
