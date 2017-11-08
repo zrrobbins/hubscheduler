@@ -6,10 +6,10 @@ import json
 import pytz
 
 from flask import Flask, render_template, request, redirect, url_for
-from wtforms import Form, DateTimeField, IntegerField
+from wtforms import Form, DateTimeField
 from wtforms.validators import DataRequired
 
-from app.calendarfunctions import get_free_calendars
+from calendarfunctions import get_free_calendars
 
 app = Flask(__name__)
 
