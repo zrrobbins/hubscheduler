@@ -15,27 +15,41 @@
   </head>
 <body>
     <div class="container">
-        <div class='col-md-8'>
+        <div class="col-md-12" style="margin: 20px;">
             <p style="font-size:20px;">Enter the in the time block you would like to search for availability for below: </p>
-            <form method="POST" action="/">
-                {{ form.time_start(size=16) }}
-                -
-                {{ form.time_end(size=16) }}
+            <form method="POST" action="">
+                {{form.time_start.label}}: {{ form.time_start(size=16) }}
+                <br />
+                {{form.time_end.label}}: {{ form.time_end(size=16) }}
                 <script type="text/javascript">
                     $(function(){
-                        $('*[name=time_start]').appendDtpicker({
-                            "minuteInterval": 15,
-                            "closeOnSelected": true
+                        // Handle creation and destruction of date pickers
+                        // We update datepickers as necessary to make sure negative time periods can"t be selected
+                        // NOTE we are using "#ID" instead of "*[name=]" selectors in this example to ensure we have the correct field
+                        $("#time_end").change(function() {
+                            $("#time_start").handleDtpicker("destroy");
+                            $("#time_start").appendDtpicker({
+                                "minuteInterval": 15,
+                                "closeOnSelected": true,
+                                maxDate: $("#time_end").val() // when the end time changes, update the maxDate on the start field
+                            });
                         });
-                    });
-                    $(function(){
-                        $('*[name=time_end]').appendDtpicker({
-                            "minuteInterval": 15,
-                            "closeOnSelected": true
+                        $("#time_start").change(function() {
+                            $("#time_end").handleDtpicker("destroy");
+                            $("#time_end").appendDtpicker({
+                                "minuteInterval": 15,
+                                "closeOnSelected": true,
+                                minDate: $("#time_start").val() // when the start time changes, update the minDate on the end field
+                            });
                         });
+
+                        // trigger change event so datapickers get attached
+                        $("#time_end").trigger("change");
+                        $("#time_start").trigger("change");
                     });
                 </script>
-                <input type="submit" value="Go">
+                <br />
+                <input type="submit" value="Submit">
             </form>
         </div>
 
@@ -44,18 +58,6 @@
     <!-- More BootStrap Crap -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
-    <!-- DatePicker script -->
-    <script type="text/javascript">
-    $(function () {
-        // TODO: FIX THIS TO WORK
-        $("#datetimepickerstart").on("dp.change", function (e) {
-            $('#datetimepickerend').data("DateTimePicker").minDate(e.date);
-        });
-        $("#datetimepickerend").on("dp.change", function (e) {
-            $('#datetimepickerstart').data("DateTimePicker").maxDate(e.date);
-        });
-    });
-</script>
 </body>
 </html>
 

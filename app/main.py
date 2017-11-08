@@ -2,56 +2,57 @@
 # Author: Zachary Robbins
 # Simple program for finding availability in google calendar
 
-import datetime
 import json
 import pytz
 
 from flask import Flask, render_template, request, redirect, url_for
-from wtforms import Form, DateTimeField
+from wtforms import Form, DateTimeField, IntegerField
 from wtforms.validators import DataRequired
 
-from app.calendarfunctions import get_events, get_free_calendars
+from app.calendarfunctions import get_free_calendars
 
 app = Flask(__name__)
 
+
 class AvailabilityForm(Form):
-    time_start = DateTimeField('Block Start', validators=[DataRequired()], format='%Y-%m-%d %H:%M:%S', description='Beginning of availability block')
-    time_end = DateTimeField('Block End', validators=[DataRequired()], format='%Y-%m-%d %H:%M:%S', description='End of availability block')
+    time_start = DateTimeField('Time Block Start', validators=[DataRequired()],
+                               format='%Y-%m-%d %H:%M', description='Beginning of availability block')
+    time_end = DateTimeField('Time Block End', validators=[DataRequired()],
+                             format='%Y-%m-%d %H:%M', description='End of availability block')
 
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/', methods=['POST','GET'])
 def main():
-    # events = get_events()
-    # event_tuples = []
+    form = AvailabilityForm(request.form)
 
-    # if not events:
-    #     return 'No upcoming events found.'
-    # for event in events:
-    #     start = event['start'].get('dateTime', event['start'].get('date'))
-    #     event_tuples.append((start, event['summary']))
+    # TODO: Write validator to make sure that you can't choose a timeblock of 0, and (if I can) add to jquery template
 
-    form = AvailabilityForm()
     if request.method == 'POST' and form.validate():
-        return redirect(url_for(show_availability, time_start=form.time_start.data, time_end=form.time_end.data))
-    print("Failed to render")
-    return render_template('availabilityform.html', form=form)
+        tz = pytz.timezone('US/Eastern')
+        time_block_start = tz.localize(form.time_start.data)
+        time_block_end = tz.localize(form.time_end.data)
+
+        return redirect(url_for('.show_availability',
+                                time_start=time_block_start.isoformat(),
+                                time_end=time_block_end.isoformat()))
+
+    print("Failed to render: ", form.errors)
+    return render_template('availabilityform.html',
+                           form=form,
+                           err_message="Make sure time block fields are filled out in correct format (%Y-%m-%d %H:%M)")
 
 
 @app.route('/availability')
 def show_availability():
-    start_time_block = request.args.get('time_start')
-    end_time_block = request.args.get('time_end')
-    print("start entered: " + start_time_block)
-    print("end entered: " + end_time_block)
-    tz = pytz.timezone('US/Eastern')
-    # start_time_block = tz.localize(datetime.datetime(2017, 11, 7, 21, 30))
-    # end_time_block = tz.localize(datetime.datetime(2017, 11, 7, 22))
+    time_block_start = request.args.get('time_start')
+    time_block_end = request.args.get('time_end')
 
-    free_cal_dict = get_free_calendars(start_time_block, end_time_block)
+    cal_dict = get_free_calendars(time_block_start, time_block_end)
+    free_cal_dict = {key: val for key, val in cal_dict.items() if not val['busy']}
 
-    return render_template('test.html',
-                           user="Zach",
-                           data=json.dumps(free_cal_dict))
+    return render_template('availability.html',
+                           free_cal_dict = free_cal_dict)
+
 
 if __name__ == "__main__":
     app.run()

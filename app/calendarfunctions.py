@@ -8,8 +8,6 @@ from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
 
-import datetime
-
 try:
     import argparse
     flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
@@ -71,45 +69,39 @@ def get_calendar_id_list(service):
     listResult = service.calendarList().list(showHidden=True, maxResults=250).execute().get('items', [])
     return [ cal["id"] for cal in listResult if "@hubspot.com" in cal["id"] ]
 
-
-def get_events():
-    """
-    Shows basic usage of the Google Calendar API.
-
-    Creates a Google Calendar API service object and outputs a list of the next
-    10 events on the user's calendar.
-    """
-    credentials = get_credentials()
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('calendar', 'v3', http=http)
-
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    print('Getting the upcoming 10 events')
-    eventsResult = service.events().list(
-        calendarId='primary', timeMin=now, maxResults=10, singleEvents=True,
-        orderBy='startTime').execute()
-    events = eventsResult.get('items', [])
-
-    # if not events:
-    #     print('No upcoming events found.')
-    # for event in events:
-    #     start = event['start'].get('dateTime', event['start'].get('date'))
-    #     print(start, event['summary'])
-
-    return events
+#
+# def get_events():
+#     """
+#     Shows basic usage of the Google Calendar API.
+#
+#     Creates a Google Calendar API service object and outputs a list of the next
+#     10 events on the user's calendar.
+#     """
+#     credentials = get_credentials()
+#     http = credentials.authorize(httplib2.Http())
+#     service = discovery.build('calendar', 'v3', http=http)
+#
+#     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+#     print('Getting the upcoming 10 events')
+#     eventsResult = service.events().list(
+#         calendarId='primary', timeMin=now, maxResults=10, singleEvents=True,
+#         orderBy='startTime').execute()
+#     events = eventsResult.get('items', [])
+#
+#     return events
 
 
 def get_free_calendars(time_block_begin, time_block_end):
     service = create_service();
 
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+    #now = datetime.datetime.utcnow().isoformat() + 'Z'
 
     calendars = get_calendar_id_list(service)
     calendars = [{"id": id} for id in calendars]
 
     request_body = {
-        "timeMin": time_block_begin.isoformat(),
-        "timeMax": time_block_end.isoformat(),
+        "timeMin": time_block_begin,
+        "timeMax": time_block_end,
         "timeZone": 'US/Eastern',
         "items": calendars
     }
