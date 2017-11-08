@@ -1,6 +1,5 @@
 click==6.7
 Flask==0.12.2
-Flask-WTF==0.14.2
 google-api-python-client==1.6.4
 httplib2==0.10.3
 itsdangerous==0.24
