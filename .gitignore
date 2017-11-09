@@ -101,5 +101,6 @@ ENV/
 .mypy_cache/
 
 #Custom
+.DS_Store
 .idea
 client_secret.json
