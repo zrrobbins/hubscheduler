@@ -18,9 +18,9 @@
         <div class="col-md-12" style="margin: 20px;">
             <p style="font-size:20px;">Enter the in the time block you would like to search for availability for below: </p>
             <form method="POST" action="">
-                {{form.time_start.label}}: {{ form.time_start(size=16) }}
+                {{form.time_start.label}}: {{ form.time_start(size=16, value=default_time) }}
                 <br />
-                {{form.time_end.label}}: {{ form.time_end(size=16) }}
+                {{form.time_end.label}}: {{ form.time_end(size=16, value=default_time) }}
                 <script type="text/javascript">
                     $(function(){
                         // Handle creation and destruction of date pickers
@@ -31,6 +31,7 @@
                             $("#time_start").appendDtpicker({
                                 "minuteInterval": 15,
                                 "closeOnSelected": true,
+                                "calendarMouseScroll": false,
                                 maxDate: $("#time_end").val() // when the end time changes, update the maxDate on the start field
                             });
                         });
@@ -39,6 +40,7 @@
                             $("#time_end").appendDtpicker({
                                 "minuteInterval": 15,
                                 "closeOnSelected": true,
+                                "calendarMouseScroll": false,
                                 minDate: $("#time_start").val() // when the start time changes, update the minDate on the end field
                             });
                         });

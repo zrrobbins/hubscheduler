@@ -2,9 +2,12 @@
 # Author: Zachary Robbins
 # Simple program for finding availability in google calendar
 
+from __future__ import print_function
+
 import json
 import pytz
 
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for
 from wtforms import Form, DateTimeField
 from wtforms.validators import DataRequired
@@ -39,6 +42,7 @@ def main():
     print("Failed to render: ", form.errors)
     return render_template('availabilityform.html',
                            form=form,
+                           default_time=datetime.now(),
                            err_message="Make sure time block fields are filled out in correct format (%Y-%m-%d %H:%M)")
 
 
