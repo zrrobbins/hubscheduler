@@ -52,12 +52,7 @@ def show_availability():
     cal_dict = get_free_calendars(time_block_start, time_block_end)
     free_cal_dict = {key: val for key, val in cal_dict.items() if not val['busy']}
 
-#TODO: REMOVE
-    print({key: val for key, val in cal_dict.items() if val['busy']})
-
-
-    return render_template('availability.html',
-                           free_cal_dict = free_cal_dict)
+    return render_template('availability.html', free_cal_dict=free_cal_dict)
 
 
 if __name__ == "__main__":

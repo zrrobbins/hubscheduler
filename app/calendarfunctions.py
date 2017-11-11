@@ -1,4 +1,3 @@
-
 from __future__ import print_function
 import httplib2
 import os
@@ -44,7 +43,7 @@ def get_credentials():
         flow.user_agent = APPLICATION_NAME
         if flags:
             credentials = tools.run_flow(flow, store, flags)
-        else: # Needed only for compatibility with Python 2.6
+        else:  # Needed only for compatibility with Python 2.6
             credentials = tools.run(flow, store)
         print('Storing credentials to ' + credential_path)
     return credentials
@@ -66,8 +65,8 @@ def get_calendar_id_list(service):
     Limited to fetching 250 as paging is not utilized here.
     """
     print('Getting list of calendars...')
-    listResult = service.calendarList().list(showHidden=True, maxResults=250).execute().get('items', [])
-    return [ cal["id"] for cal in listResult if "@hubspot.com" in cal["id"] ]
+    list_result = service.calendarList().list(showHidden=True, maxResults=250).execute().get('items', [])
+    return [cal["id"] for cal in list_result if "@hubspot.com" in cal["id"]]
 
 
 def get_free_calendars(time_block_begin, time_block_end):
