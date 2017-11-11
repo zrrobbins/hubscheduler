@@ -8,7 +8,7 @@ import pytz
 
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for
-from wtforms import Form, DateTimeField, StringField
+from wtforms import Form, DateTimeField
 from wtforms.validators import DataRequired
 
 from calendarfunctions import get_free_calendars
