@@ -104,3 +104,4 @@ ENV/
 .DS_Store
 .idea
 client_secret.json
+notes.txt
