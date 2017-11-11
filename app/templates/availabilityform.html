@@ -5,61 +5,61 @@
       <!-- Required meta tags -->
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <!--Requirement jQuery-->
-      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-      <!--Load DateTimePicker Script and Stylesheet -->
-      <script type="text/javascript" src="../static/jquery.simple-dtpicker.js"></script>
-      <link type="text/css" href="../static/jquery.simple-dtpicker.css" rel="stylesheet" />
-      <!-- Bootstrap CSS -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+      <!-- jQuery -->
+      <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+      <!-- Moment.js -->
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+      <!-- Bootstrap -->
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+      <!--Datetimepicker -->
+      <script type="text/javascript" src="../static/bootstrap-datetimepicker.min.js"></script>
+      <link rel="stylesheet" href="../static/bootstrap-datetimepicker.min.css">
   </head>
 <body>
-    <div class="container">
-        <div class="col-md-12" style="margin: 20px;">
-            <p style="font-size:20px;">Enter the in the time block you would like to search for availability for below: </p>
-            <form method="POST" action="">
-                {{form.time_start.label}}: {{ form.time_start(size=16, value=default_time) }}
-                <br />
-                {{form.time_end.label}}: {{ form.time_end(size=16, value=default_time) }}
-                <script type="text/javascript">
-                    $(function(){
-                        // Handle creation and destruction of date pickers
-                        // We update datepickers as necessary to make sure negative time periods can"t be selected
-                        // NOTE we are using "#ID" instead of "*[name=]" selectors in this example to ensure we have the correct field
-                        $("#time_end").change(function() {
-                            $("#time_start").handleDtpicker("destroy");
-                            $("#time_start").appendDtpicker({
-                                "minuteInterval": 15,
-                                "closeOnSelected": true,
-                                "calendarMouseScroll": false,
-                                maxDate: $("#time_end").val() // when the end time changes, update the maxDate on the start field
-                            });
-                        });
-                        $("#time_start").change(function() {
-                            $("#time_end").handleDtpicker("destroy");
-                            $("#time_end").appendDtpicker({
-                                "minuteInterval": 15,
-                                "closeOnSelected": true,
-                                "calendarMouseScroll": false,
-                                minDate: $("#time_start").val() // when the start time changes, update the minDate on the end field
-                            });
-                        });
-
-                        // trigger change event so datapickers get attached
-                        $("#time_end").trigger("change");
-                        $("#time_start").trigger("change");
-                    });
-                </script>
-                <br />
-                <input type="submit" value="Submit">
-            </form>
-        </div>
-
+    <div class="container" style="margin: 20px;">
+        <p style="font-size:16px;">Enter the in the time block you would like to search for availability for below: </p>
+        <form method="POST" action="">
+            <div class='col-md-4'>
+                <div class="form-group">
+                    {{form.time_start.label}}:
+                    <div class='input-group date' id='dtp_start'>
+                        {{ form.time_start(size=16, class_="form-control") }}
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class='col-md-4'>
+                <div class="form-group">
+                    {{form.time_end.label}}:
+                    <div class='input-group date' id='dtp_end'>
+                        {{ form.time_end(size=16, class_="form-control") }}
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </div>
+        </form>
     </div>
-
-    <!-- More BootStrap Crap -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#dtp_start').datetimepicker();
+            $('#dtp_end').datetimepicker({
+                useCurrent: false //Important! See issue #1075
+            });
+            $("#dtp_start").on("dp.change", function (e) {
+                $('#dtp_end').data("DateTimePicker").minDate(e.date);
+            });
+            $("#dtp_end").on("dp.change", function (e) {
+                $('#dtp_start').data("DateTimePicker").maxDate(e.date);
+            });
+        });
+    </script>
 </body>
 </html>
-

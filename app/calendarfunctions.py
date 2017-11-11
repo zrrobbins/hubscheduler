@@ -69,30 +69,12 @@ def get_calendar_id_list(service):
     listResult = service.calendarList().list(showHidden=True, maxResults=250).execute().get('items', [])
     return [ cal["id"] for cal in listResult if "@hubspot.com" in cal["id"] ]
 
-#
-# def get_events():
-#     """
-#     Shows basic usage of the Google Calendar API.
-#
-#     Creates a Google Calendar API service object and outputs a list of the next
-#     10 events on the user's calendar.
-#     """
-#     credentials = get_credentials()
-#     http = credentials.authorize(httplib2.Http())
-#     service = discovery.build('calendar', 'v3', http=http)
-#
-#     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-#     print('Getting the upcoming 10 events')
-#     eventsResult = service.events().list(
-#         calendarId='primary', timeMin=now, maxResults=10, singleEvents=True,
-#         orderBy='startTime').execute()
-#     events = eventsResult.get('items', [])
-#
-#     return events
-
 
 def get_free_calendars(time_block_begin, time_block_end):
-    service = create_service();
+    """
+    Take two isoformat datetime strings and find the calendars with free/busy time in the specified time block.
+    """
+    service = create_service()
 
     #now = datetime.datetime.utcnow().isoformat() + 'Z'
 
@@ -106,6 +88,6 @@ def get_free_calendars(time_block_begin, time_block_end):
         "items": calendars
     }
 
-    eventsResult = service.freebusy().query(body=request_body).execute()
-    cal_dict = eventsResult[u'calendars']
+    events_result = service.freebusy().query(body=request_body).execute()
+    cal_dict = events_result[u'calendars']
     return cal_dict
